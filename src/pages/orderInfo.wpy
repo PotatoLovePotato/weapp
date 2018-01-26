@@ -1,0 +1,116 @@
+
+<style lang="scss">
+    .order_info_none{
+        text-align: center;
+        line-height: 200rpx;
+        font-size: 36rpx;
+    }
+</style>
+
+<template>
+    
+    <view class="order_info_wrap">
+        <view class="order_info_none" wx:if="{{!display}}">
+            {{tip}}
+        </view>
+        <repeat for="{{itemConfig}}" item="item" wx:if="{{display}}">
+            <view class="goods_item">
+                <goods-section :itemConfig.sync="item"></goods-section>
+            </view>
+        </repeat>
+
+    </view>
+
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+    import GoodsSection from '../components/goods/GoodsSection'
+
+    export default class OrderInfo extends wepy.page{
+        config = {
+            navigationBarTitleText: '个人订单'
+        }
+        components = {
+            "goods-section": GoodsSection
+        }
+        data = {
+            openApiHost: '',
+            openImgHost: '',
+            configId: '',
+            merchant_id: '',
+            tip: '',
+            display: false,
+            orderIndex: 0,
+            itemConfig: [
+                // {
+                //     imgUrl: '../images/info.png',
+                //     goodsTit: '联想（Lenovo）拯救者联想（Lenovo）拯救者联想（Lenovo）拯救者联想（Lenovo）拯救者',
+                //     line: 2,
+                //     id: 76,
+                //     orderInfo: true,
+                //     orderNum: 20180116170928358
+                // }
+            ]
+        }
+        getOrderId(){
+            let openId = wepy.getStorageSync('openid')
+            const config_id = this.configId
+
+            openId = openId ? openId : ''
+            wepy.request({
+                url: `${this.openApiHost}/restapi/orders`,
+                data: {
+                    openid: openId,
+                    config_id: config_id
+                    // fields: 'id,product' //获取自己需要的关键字
+                },
+                success: (res) => {
+                    wepy.hideLoading()
+                    if(res.data.data.length > 0){
+                        this.display = true
+                    }else{
+                        this.tip = '您还没有订单呦~~~'
+                        return 
+                    }
+                    const orderList = res.data.data.map( (item) => {
+                        let status = item.status == '正常' ? '已支付' : '未支付'
+                        let btnBan = item.status == '正常' ? false : true
+                        return {
+                            imgUrl: `${this.openImgHost}${item.product_thumb}`,
+                            goodsTit: item.product_name,
+                            line: 2,
+                            id: item.product_id,
+                            orderInfo: true,
+                            orderNum: item.id,
+                            status: status,
+                            btnBan: btnBan
+                        }
+                    })
+                    this.itemConfig = orderList
+                    this.$apply()
+                }   
+            })
+        }
+        getExtJson(id){
+            if (wepy.getExtConfigSync) {
+                const extConfig = wepy.getExtConfigSync();
+                this.openApiHost = extConfig.api_host
+                this.openImgHost = extConfig.img_host
+                this.configId = extConfig.config_id
+                this.merchant_id = extConfig.merchant_id
+                this.getOrderId()
+            }
+        }
+        onLoad(){
+            wepy.showLoading({
+                title: '加载中...',
+                mask: true
+            })
+            // 获取商家信息及地址
+            this.getExtJson()
+            
+        }
+    }
+</script>

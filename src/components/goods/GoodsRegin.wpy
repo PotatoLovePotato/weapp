@@ -1,0 +1,75 @@
+
+<style lang="scss">
+
+    .goods{
+
+        &_wrap{
+            background: #ffffff;
+        }
+
+        &_tit{
+            $titHeight: 112rpx;
+            height: $titHeight;
+            line-height: $titHeight;
+            padding: 0 30rpx;
+            font-size: 35rpx;
+
+            &_border{
+                width: 10rpx;
+                display: inline-block;
+                height: 26rpx;
+                vertical-align: center;
+                margin-right: 24rpx;
+            }
+        }
+
+    }
+    
+</style>
+
+<template>
+    
+    <view class="goods_wrap">
+
+        <view class="goods_tit" style="color: {{goodsConfig.titleColor}}">
+            <view class="goods_tit_border" style="background-color: {{goodsConfig.titleColor}}"></view>
+            <text>{{goodsConfig.title}}</text>
+        </view>
+
+        <repeat for="{{goodsConfig.goods}}" item="item">
+            <view class="goods_item">
+                <goods-section :itemConfig.sync="item"></goods-section>
+            </view>
+        </repeat>
+        
+         
+    </view>
+
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+    import GoodsSection from './GoodsSection'
+
+    export default class GoodsRegin extends wepy.component{
+        data = {
+            
+        }
+        
+        components = {
+            'goods-section': GoodsSection
+        }
+        props = {
+            goodsConfig: {
+                type: Object,
+                coerce: (res) => {
+                    return res
+                },
+                default: {}
+            }
+        }
+
+    }
+
+</script>

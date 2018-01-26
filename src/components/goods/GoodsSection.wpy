@@ -1,0 +1,197 @@
+
+<style lang="scss">
+    
+    .goods{
+        $fontSize: 32rpx;
+        &_section_top{
+            height: 108rpx;
+            line-height: 108rpx;
+            padding: 0 30rpx;
+            font-size: 28rpx;
+            border-top: 14rpx solid #f2f2f2;
+
+            .payBtn{
+                width: 160rpx;
+                height: 58rpx;
+                line-height: 58rpx;
+                text-align: center;
+                vertical-align: middle;
+                background: #d53b33;
+                border-radius: 12rpx;
+                color: #fff;
+                margin-top: 25rpx;
+                float: right;
+                &_none{
+                    background: #a5a3a3;
+                    color: #838181;
+                }
+            }
+        }
+        &_section {
+            image{
+                width: 100%;
+                display: block;
+            }
+            text{
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                -webkit-line-clamp: 2;      
+            }
+        }
+        &_text{
+            padding: 30rpx;
+            font-size: 30rpx;
+        }
+        &_num{
+            
+            padding: 30rpx 0;
+            line-height: 32rpx;
+            font-size: $fontSize;
+            image{
+                width: $fontSize;
+                height: $fontSize;
+                display: inline-block;
+                vertical-align: middle;
+            }
+            text{
+                display: inline-block;
+            }
+            text:nth-child(2){
+                float: right;
+            }
+        }
+        &_bor{
+            margin-bottom: 30rpx;
+            border-bottom: 1px solid #e6e6e6; 
+            &_none{
+                border: 0!important;
+            }
+        }
+        &_price_num{
+            color: #da5350;
+            font-size: $fontSize;
+            text{
+                line-height: $fontSize / 2;
+                font-size: $fontSize / 2;
+                vertical-align: - $fontSize / 2 + ($fontSize / 2);
+            }
+        }
+        @at-root{
+            .elip{
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                position: relative;
+                &_activtiy{
+                    padding-right: 80rpx;
+                }
+                .activity{
+                    width: 70rpx;
+                    box-sizing: border-box;
+                    text-align: center;
+                    line-height: 30rpx;
+                    font-size: 22rpx;
+                    color: #fff;
+                    background: #da534f;
+                    position: absolute;
+                    top: 0;right: 0;
+                }
+                &_multiple {
+                    white-space: normal;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                }
+            }
+        }
+    }
+    
+</style>
+
+<template>
+    
+    <view>
+        <view class="goods_section_top" wx:if="{{itemConfig.orderInfo}}" >
+            订单编号 : {{itemConfig.orderNum}}
+            <view class="payBtn {{!itemConfig.btnBan ? 'payBtn_none' : ''}}" data-btnban="{{itemConfig.btnBan}}" @tap="payActive" id="{{itemConfig.id}}">
+                {{itemConfig.status}}
+            </view>
+        </view>
+        
+        <view class="goods_section" @tap="navLink" id="{{itemConfig.id}}">
+
+            <image mode="widthFix" src="{{itemConfig.imgUrl}}"></image>
+
+            <view class="goods_text">
+                <view class="goods_bor {{itemConfig.orderInfo ? 'goods_bor_none' : ''}}" >
+                    <view 
+                        class="elip {{itemConfig.line > 1 ? 'elip_multiple' : ''}} {{itemConfig.activityValue ? 'elip_activtiy': ''}}" 
+                        style="{{itemConfig.line > 1 ? '-webkit-line-clamp:' + itemConfig.line + ' ;' : ''}}"
+                    >
+                        {{itemConfig.goodsTit}}
+                        <view class="activity">
+                            {{itemConfig.activityValue}}
+                        </view>
+                    </view>
+                    <view class="goods_price" wx:if="{{!itemConfig.orderInfo}}">
+                        <view class="goods_num">
+                            <text><image mode="widthFix" src="{{itemConfig.icon}}"></image> [已售] {{itemConfig.goodsNum}}</text>
+
+                            <text class="goods_price_num"><text>￥</text>{{itemConfig.price}}</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            
+        </view>
+    </view>
+
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+    // import Elip from '../textElip/Elip'
+
+    export default class GoodsSection extends wepy.component{
+        config = {
+            
+        }
+        components = {
+            // elip: Elip
+        }
+        props = {
+            itemConfig: {
+                type: Object,
+                coerce: function (res) {
+                    return res
+                }
+            }
+        }
+        methods = {
+            navLink(e){
+                let id = e.currentTarget.id
+                // 'pages/goodsInfo'
+                wx.navigateTo({
+                    url: `goodsInfo?id=${id}`
+                })
+            },
+            payActive(e){
+                let id = e.currentTarget.id
+                let btnBan = e.currentTarget.dataset.btnban
+                if(!btnBan) return 
+                wx.setStorageSync('goodsId', id)
+                wx.navigateTo({
+                    url: `payConfirm?id=${id}`
+                })
+            }
+        }
+        onLoad(){
+            
+        }
+    }
+
+</script>

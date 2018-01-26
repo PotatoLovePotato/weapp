@@ -1,0 +1,143 @@
+<style lang="scss">
+
+	@font-face {
+		font-family: 'iconfont';
+		src: url(data:application/font-woff2;charset=utf-8;base64,d09GMgABAAAAAAUAAA0AAAAACawAAASpAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GVgCCWhEICoZkhTULEAABNgIkAxgEIAWFCAdFGwUIUZROTpfsZ4Jtq2C9CAQpW83H/DethPUumWI5sBw0g3An+P///do+930fkzR5sDQNS17VKp5MG5HG6qSiIUOnBPEPD7jfeoiH9NsaNjSS8JCh6fZRbWS8BBqVSIhw171pOh7yb++6W5pkrYWWBdY+eegZ/60l8AdztmTzZKJ298JNUvAGvMaGu7/NqEv1q9BT2y98E89EqbbxjtGEuj0FOEChTDDaipVuP54HvAlIjCOUiWIG9DYRr5iuTgIEeD77NQAvm/En57QFZEEdGHEC4gEDym+d8GGP3YFr4PX6SUYExk+4pWOt0CBt2RvlZbpmiWGQQSiCgzMNHzuVEvY+u26QiBhz2DVfxd5opACb4j81/hh3xkFUW1kznlE0AUb4TgF+gwMUNdJe8yGb96xCO+j09v4ZX4ajteapZFsqeaqooLxaYVDZPNBahNi9G7cCzDNMfvNhhIBuIGhJtm7cu9aBWulaIPb85s15CFuyG8kmuoXZ3FJySS4Xx/E81tMtHmH5ck8vyBQKGzCmhwDt5SvOlN4Q55dInA2xG4GdbLIbxS1QKToEhNjNzBa8Ib7umLsjqbMWGdjb0PVG7HEImRMY02MAchS1QgDDNohzCEJBdGI93WTjOBuHEECs4Mg7Razn15GNCLWjODy+Frt87eYtGI9ffb/c/fut7t5tcfBu6N69lpiKTrkgONCDB62dtYjlbLKbd7UK4TH1+kmXDth/m7lTGhjhvlvk5nAO9VjLHmayvXvlmRM03pMnrsBKT3NL/YMOT4MFoKRfMa5rYHrX/atmlgAD/TXep3a+rJSbfCA7ubLN9DtzYdgwqpLO5DG5ZffT8WNbVqs6xhGs8MGw7Ww9u8GUxc3bj3qLR18X7EeDcxJvwGnXmnISH9p15S1VujJgAEbWAF42egkKM3FfagjogRvdgin3G+rB3PJ1ndZm8RrxWlPSI3xmX2mv2fsZaCjrtrjAyO/lsGcY/Xj7SbFn4ypXiLqL0azXXltYRbWd36X9mByyrWDsejPohrq9ZXuUL290VHRj9M3kLzKPBuVUWlay8R7l1F3bp8mA6q5tyml73J+4DNbq0KEWVGqfaRuaZ8Sh7bOYDoADIDcH9XNpn2vKK8TqrfBRx1HcdXPDyrVqKFq331YsNWrT6cAHz4cNcvXLfV7KLG1TkIUu8ndB/XchD3ObSgAQEHa36+fq0v/m9nkMVfvJcdx2c1kgYgCE4YW6AHAvAiz5BY7qAvchC85UoooFhE74ABhIJCAFgKDsAwuKNdKGRKZgQttwIlesJ97Cl/GEQOQVia4Y2J1RiRscVQx0AoAUZWHyluEUzVhPPMFXd0Gg6BmJGX+rM5qxg9egMaVqqlobhJoV2VI30KeHTHmR3KAEZ7Lgj/Z7kypL+G6YoJhmuqrG+E2e3eT2KXKGMjbR6hYSouLYYfefiMazsqOD+5RxPx+ZmDMlTU1pgjY20CMUi5ikdHUNCMNwmjalbiqK65n6ydxMTqd6Tx58ETm4NI7+sjkPa+WPN5QSE6NLzkfV68ywZcrozME1R45pTEx8sTYEYhbD5OSF66xZjWrfvqn0zLXR+qeP5AwAAAA=) format('woff2'),
+		url(data:application/font-woff;charset=utf-8;base64,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) format('woff'),
+		url('iconfont.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+	}
+	.iconfont {
+		font-family:"iconfont" !important;
+		font-size:16px;
+		font-style:normal;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+  	.icon_kefu:before { content: "\e646"; }
+
+	.icon_jiantou:before { content: "\e64e"; }
+
+	.icon_dingdan:before { content: "\e608"; }
+
+	.container {
+		height: 100%;
+		box-sizing: border-box;
+	}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+	config = {
+		pages: [
+			'pages/index',
+			'pages/member',
+			'pages/goodsInfo',
+			'pages/payConfirm',
+			'pages/orderInfo',
+			'pages/article',
+			'pages/gbook',
+			'pages/map',
+			'pages/paySuccess',
+		],
+		window: {
+			backgroundTextStyle: 'light',
+			navigationBarBackgroundColor: '#fff',
+			navigationBarTitleText: 'WeChat',
+			navigationBarTextStyle: 'black'
+		},
+		tabBar:{
+			color: '#707070',
+			selectedColor: '#d53b33',
+			list:[
+				{
+					text: '首页',
+					pagePath: 'pages/index',
+					iconPath: './images/home.png',
+					selectedIconPath: './images/home-active.png'
+				},
+				{
+					text: '个人中心',
+					pagePath: 'pages/member',
+					iconPath: './images/member.png',
+					selectedIconPath: './images/member-active.png'
+				},
+			]
+		}
+	}
+
+	globalData = {
+		userInfo: null,
+		api_host: '',
+		img_host: '',
+		config_id: '',
+		openid: '',
+		merchant_id: ''
+	}
+
+	constructor () {
+		super()
+		this.use('requestfix')
+	}
+
+	onLaunch() {
+		this.getExtJson()
+		// let extConfig = wx.getExtConfigSync ? wx.getExtConfigSync(): {}
+		// console.log(wx.getExtConfigSync())
+
+		wx.login({
+			success: (res) => {
+				if (res.code) {
+				//发起网络请求 
+					wx.request({
+						url: `${this.globalData.api_host}/restapi/default/new-openid`,
+						data: {
+							config_id: this.globalData.config_id,
+							code: res.code
+						},
+						header: {
+							"content-type": 'application/json'
+						},
+						success: (d) => {
+							this.globalData.openid = d.data.data.openid 
+							wx.setStorageSync('openid', d.data.data.openid);
+						}
+					})
+				} else {
+					console.log(`获取用户登录态失败！${res.errMsg}`)
+				}
+			}
+		})
+
+	}
+
+	getUserInfo(cb) {
+		const that = this
+		if (this.globalData.userInfo) {
+			return this.globalData.userInfo
+		}
+		wepy.getUserInfo({
+			success (res) {
+			that.globalData.userInfo = res.userInfo
+			cb && cb(res.userInfo)
+			}
+		})
+	}
+	getExtJson(){
+		
+		if (wepy.getExtConfigSync) {
+			const extConfig = wepy.getExtConfigSync()
+			this.globalData.api_host = extConfig.api_host
+			this.globalData.img_host = extConfig.img_host
+			this.globalData.config_id = extConfig.config_id
+			this.globalData.merchant_id = extConfig.merchant_id
+		}
+
+	}
+}
+</script>

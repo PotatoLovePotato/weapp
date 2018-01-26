@@ -1,0 +1,59 @@
+
+<style lang="scss">
+    
+</style>
+
+<template>
+    
+    <view>
+        <map 
+            id="map" 
+            longitude="{{log}}" 
+            latitude="{{lat}}" 
+            scale="14" 
+            controls="{{controls}}" 
+            bindcontroltap="controltap" 
+            markers="{{markers}}" 
+            bindmarkertap="markertap" 
+            bindregionchange="regionchange" 
+            show-location 
+            style="position: fixed; width: 100%; height: 100%;"
+        ></map>
+    </view>
+
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+
+    export default class Map extends wepy.page{
+        config = {
+          navigationBarTitleText: '店铺地图'
+        }
+        onLoad(){
+            // wepy.openLocation({
+            //     latitude: 23.099994,
+            //     longitude: 113.324520,
+            //     name: '1qwertyuiop'
+            // })
+        }
+        data = {
+            lat: 23.21229,
+            log: 113.324520,
+            markers: [{
+                id: "map",
+                latitude: this.lat,
+                longitude: this.log,
+                width: 50,
+                height: 50,
+                iconPath: "../images/1.png",
+                callout: {
+                    content: 'sdfghjkl;'
+                }
+            }],
+            controls:[]
+        }
+    }
+    
+</script>

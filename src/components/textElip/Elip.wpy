@@ -1,0 +1,39 @@
+
+<style lang="scss">
+    // .elip {
+    //     overflow: hidden;
+    //     white-space: nowrap;
+    //     text-overflow: ellipsis;
+    //     &_multiple {
+    //         white-space: normal;
+    //         display: -webkit-box;
+    //         -webkit-box-orient: vertical;
+    //     }
+    // }
+</style>
+
+<template>
+    <view class="elip {{line > 1 ? 'elip_multiple' : ''}}" style="{{line > 1 ? '-webkit-line-clamp:' + line + ' ;' : ''}}">
+        <slot></slot>
+    </view>
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+
+    export default class Elip extends wepy.component{
+        props = {
+            line: {
+                type: [Object, String, Number],
+                coerce: (res) => {
+                    return res
+                },
+                default: 0
+            }
+        }
+        onLoad(){
+            
+        }
+    }
+</script>

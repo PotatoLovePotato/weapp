@@ -1,0 +1,244 @@
+
+<style lang="scss">
+    
+    .pay_page{
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: scroll;
+        box-sizing: 120rpx;
+        &_msg{
+            border-top: 16rpx solid #f2f2f2;
+            padding: 30rpx;
+        }
+        &_tel{
+            padding: 18rpx 0;
+            border-bottom: 1px solid #eee;
+            text{
+                line-height: 44rpx;
+                font-size: 26rpx;
+            }
+            input{
+                height: 52rpx;
+                line-height: 52rpx;
+                font-size: 22rpx;
+            }
+        }
+        &_num{
+            padding-top: 56rpx;
+        }
+        @at-root{
+            .num_selected{
+                display: inline-block;
+                width: 170rpx;
+                height: 52rpx;
+                line-height: 52rpx;
+                border-radius: 8rpx;
+                text-align: center;
+                border: 1rpx solid #ccc;
+                margin-left: 16rpx;
+                view{
+                    display: flex;
+                    height: 52rpx;
+                    input{
+                        height: 52rpx;
+                        line-height: 32rpx;
+                        font-size: 24rpx;
+                    }
+                    text{
+                        width: 48rpx;
+                        flex-shrink: 0;
+                        font-size: 24rpx;
+                        box-sizing: border-box;
+                    }
+                    text:nth-of-type(1){
+                        border-right: 1px solid #ccc;
+                    }
+                    text:nth-of-type(2){
+                        border-left: 1px solid #ccc;
+                    }
+                }
+            }
+        }
+    }
+
+</style>
+
+<template>
+    
+    <view class="pay_page">
+        
+        <!-- 列表信息组件 -->
+        <seingle-block :seingleBlockConfig.sync="seingleBlockConfig"></seingle-block>
+
+        <!-- 信息填写区 -->
+        <view class="pay_page_msg">
+            <view class="pay_page_tel">
+                <text>请填写手机号</text>
+                <input @input="telChange" placeholder="请输入用于接受验证码的手机号"/>
+            </view>
+            <view class="pay_page_num">
+                <text>购买数量</text> 
+                <view class="num_selected">
+                    <view class="num_flex">
+                        <text @tap="reduce">-</text>
+                        <input 
+                            @input="inputChange" 
+                            @blur="inputBlur"
+                            @confirm="inputBlur"
+                            type="number" 
+                            value="{{count}}"
+                        />
+                        <text @tap="plus">+</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+
+        <!-- 底部按钮组建 -->
+        <pay-btn :btnConfig.sync="btnConfig"></pay-btn>
+
+    </view>
+
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+    import SeingleBlock from '../components/goodsSingleBlock/SeingleBlock'
+    import PayBtn from '../components/shopBtn/PayBtn'
+
+    export default class PayConfirm extends wepy.page{
+        config = {
+            "navigationBarTitleText": "确认订单"
+        }
+        components = {
+            "seingle-block": SeingleBlock,
+            "pay-btn": PayBtn
+        }
+        data = {
+            id: '',
+            count: 1,
+            stock: 999,
+            api_host: '',
+            img_host: '',
+            config_id: '',
+            tel: '',
+            reg: /^[0-9]{1,}$/,
+            seingleBlockConfig: { // imgUrl 图片地址 text 商品介绍 goodsId 商品id
+                
+            },
+            btnConfig: {
+                parentName: '',
+                position: '',
+                list: [
+                    {
+                        text: '联系客服',
+                        path: '',
+                        iconPath: '../images/kefu.png',
+                        iconColor: '',
+                        iconActiveColor: '',
+                        fontSize: '',
+                        itemBg: ''
+                    },
+                    {
+                        text: '支付订单',
+                        pay: true,
+                        path: 'payConfirm',
+                        iconPath: '',
+                        iconColor: '',
+                        iconActiveColor: '',
+                        fontSize: '',
+                        itemBg: "rgb(213, 59, 51)"
+                    },
+                ]
+            }
+        }
+        watch = {
+            count(newVal){
+                this.$broadcast('countChange', newVal);
+            },
+
+        }
+        methods = {
+            reduce(){
+                this.count--
+                this.count = this.count < 1 ? 1 : this.count
+                this.$apply()
+            },
+            plus(){
+                this.count++
+                this.count = this.count > this.stock ? this.stock : this.count
+                this.$apply()
+            },
+            telChange(e){
+                this.$broadcast('phoneNum', e.detail.value)
+            },  
+            inputChange(e){
+                let val = e.detail.value
+                if(!this.reg.test(val)){
+                    wepy.showToast({
+                        title: `只能输入数字哟`,
+                        icon: 'none',
+                        duration: 2000
+                    })
+                }
+                if(val > this.stock){
+                    wepy.showToast({
+                        title: `库存不足,最大${this.stock}`,
+                        icon: 'none',
+                        duration: 2000
+                    })
+                    this.count = this.stock
+                }else if(val < 1){
+                    wepy.showToast({
+                        title: `最少要选一个哟`,
+                        icon: 'none',
+                        duration: 2000
+                    })
+                }
+                this.count = val
+                // this.$apply()
+            },
+            inputBlur(){
+                if(!this.reg.test(this.count)){
+                    this.count = 1
+                }
+                this.count = this.count > this.stock ? this.stock : this.count < 1 ? 1 : this.count
+                this.$apply()
+            }
+        }
+        getMsg(id){
+            wepy.request({
+                url: `${this.api_host}/restapi/products/${id}`,
+                data:{
+                    fields: 'id,name,image', //获取自己需要的关键字,
+                    config_id: this.config_id
+                },
+                success: (res) => {
+                    const data = res.data.data
+                    this.seingleBlockConfig.imgUrl = `${this.img_host}${data.image}`
+                    this.seingleBlockConfig.text = data.name
+                    this.$apply()
+                }
+            })
+        }
+        getExtJson(id){
+            if (wepy.getExtConfigSync) {
+                const extConfig = wepy.getExtConfigSync();
+                this.api_host = extConfig.api_host
+                this.img_host = extConfig.img_host
+                this.config_id = extConfig.config_id
+                this.merchant_id = extConfig.merchant_id
+                this.getMsg(id)
+            }
+        }
+        onLoad(option){
+            this.getExtJson(option.id)
+            // 获取商家信息及地址
+            
+            this.$broadcast('payId', option.id)
+            
+        }
+    }
+</script>

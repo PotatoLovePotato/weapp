@@ -1,0 +1,56 @@
+{
+  "extEnable": true,
+  "extAppid": "wx8b963b9cfc19aabf",
+  "directCommit": false,
+  "ext": {
+    "api_host": "https://www.xiaoniren.cn",
+    "img_host": "https://www.xiaoniren.cn",
+    "config_id": 634,
+    "merchant_id": 130,
+    "menu":[
+      {
+        "name": "单页面",
+        "icon": "图标url",
+        "page": "article?id=111"
+      },
+      {
+        "name": "地图导航",
+        "icon": "图标url",
+        "page": "map"
+      },
+      {
+        "name": "留言",
+        "icon": "图标url",
+        "page": "gbook"
+      },
+      {
+        "name": "单页面",
+        "icon": "图标url",
+        "page": "gbook"
+      },
+      {
+        "name": "单页面",
+        "icon": "图标url",
+        "page": "gbook"
+      },
+      {
+        "name": "单页面",
+        "icon": "图标url",
+        "page": "gbook"
+      }
+    ]
+  },
+  "extPages": {
+    
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Demo",
+    "navigationBarTextStyle": "black"
+  },
+  "$schema":{
+    "request": 10000,
+    "downloadFile": 10000
+  }
+}

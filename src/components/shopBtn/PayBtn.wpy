@@ -1,0 +1,214 @@
+
+<style lang="scss">
+    
+    .payBtn_wrap{
+        width: 100%;
+        height: 120rpx;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        overflow: hidden;
+        border-top:  1px solid #e6e6e6; 
+        z-index: 99;    
+        background: #fff;
+
+        .btn_item{
+            flex: 1;
+            text-align: center;
+            overflow: hidden;
+            text{
+                width: 100%;
+                display: block;
+            }
+            .btn_text{
+                height: 120rpx;
+                line-height: 120rpx;
+                display: flex;
+                flex-wrap: wrap;
+                position: relative;
+                view{
+                    width: 100%;
+                }
+                &_icon{
+                    
+                    view{
+                        height: 60rpx;
+                    }
+                    image{
+                        width: 60rpx;
+                        height: 60rpx;
+                        margin: 14rpx auto 0;
+                        display: block;
+                    }
+                    text{
+                        font-size: 32rpx;
+                        line-height: 32rpx;
+                        color: #000;
+                    }
+                }
+            }
+        }
+        button{
+            border-radius: 0;
+            border: 0;
+            background: #ffffff;
+            &:after{
+                display: none;
+            }
+        }
+        .contact{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            z-index: 9;
+        }
+        .wx-contact-button-wrapper{
+            width: 100%;
+            height: 100%;
+        }
+
+    }
+
+</style>
+
+<template>
+
+    <view class="payBtn_wrap">
+        <view
+            wx:for="{{btnConfig.list}}" 
+            class="btn_item"
+            wx:key="{{index}}"
+        >
+            <view 
+                wx:if="{{item.iconPath}}"
+                class="btn_text {{item.iconPath ? 'btn_text_icon' : ''}}"
+                style="background-color: {{!item.itemBg || item.itemBg === '#ffffff' || item.itemBg === '#fff' ? item.itemBg + ';color: #000' : item.itemBg + ';color: #fff' }}"
+            >
+                <contact-button class="contact"></contact-button>
+                <view><image src="{{item.iconPath}}"></image></view>
+                <text>{{item.text}}</text>
+            </view>
+            <view 
+                wx:if="{{!item.iconPath}}"
+                class="btn_text"
+                data-url="{{item.path}}"
+                data-pay="{{item.pay}}"
+                @tap="method"
+                style="background-color: {{!item.itemBg || item.itemBg === '#ffffff' || item.itemBg === '#fff' ? item.itemBg + ';color: #000' : item.itemBg + ';color: #fff' }}"
+            >
+                <text>{{item.text}}</text>
+            </view>
+        </view>
+    </view>
+
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+    export default class PayBtn extends wepy.component {
+        data = {
+            btnList:[],
+            id: '',
+            openid: '',
+            tel: '',
+            count: 1,
+            api_host: '',
+            img_host: '',
+            config_id: '',
+            merchant_id: '',
+            reg: /^1[3|4|5|6|7|8][0-9]\d{8}$/
+        }
+        props = {
+            btnConfig:{}
+        }
+        goTo(e){
+            const url = e.currentTarget.dataset.url
+            const goodsId = wx.getStorageSync('goodsId')
+            if(url && goodsId){
+                wx.navigateTo({
+                    url: `${url}?id=${goodsId}`
+                })
+            }
+        }
+        wxPay(e){
+            const opid = wx.getStorageSync('openid')
+            const id = wx.getStorageSync('goodsId')
+
+            if(!this.reg.test(this.tel)){
+                wepy.showToast({
+                    title: `手机号不正确`,
+                    icon: 'none',
+                    duration: 2000
+                })
+                return
+            }
+
+            wepy.request({
+                url: `${this.api_host}/restapi/wxorders`,
+                method: 'POST',
+                data: {
+                    openid: opid,
+                    the_openid: opid,
+                    config_id: this.config_id,
+                    product_id: id,
+                    quantity: this.count,
+                    mobile: this.tel
+                },
+                header: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                },
+                success: (res) => {
+                    const data = res.data.data
+
+                    wx.requestPayment({
+                        'timeStamp': data.timeStamp,
+                        'nonceStr': data.nonceStr,
+                        'package': data.package,
+                        'signType': data.signType,
+                        'paySign': data.paySign,
+                        'success':function(res){
+                            wx.navigateTo({
+                                url: 'paySuccess'
+                            })
+                        },
+                        'fail':function(res){
+                            wepy.showToast({
+                                title: `支付失败`,
+                                icon: 'none',
+                                duration: 2000
+                            })
+                        }
+                    })
+                }
+            })
+            
+        } 
+        methods = {
+            method(e){
+                if(e.currentTarget.dataset.pay){
+                    this.wxPay(e)
+                }else{
+                    this.goTo(e)
+                }
+            }
+        }
+        events = {
+            phoneNum(tel){
+                this.tel = tel
+            },
+            countChange(count){
+                this.count = count
+            }
+        }
+        onLoad(){
+            this.api_host = this.$parent.$parent.globalData.api_host
+            this.config_id = this.$parent.$parent.globalData.config_id
+        }
+    }
+
+</script>

@@ -1,0 +1,181 @@
+<style lang="scss">
+
+</style>
+
+<template>
+	<view class="container">
+
+		<!-- 轮播图组件  -->
+		<carousel :carouselConfig.sync="carouselConfig"></carousel>
+
+		<!-- 导航组件 -->
+		<nav :navConfig.sync="navConfig"></nav>
+
+		<!-- 商品显示区组件 -->
+		<goods-regin :goodsConfig.sync="goodsConfig"></goods-regin>
+
+	</view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Carousel from '../components/swiper/Carousel'
+  import Nav from '../components/navigation/Nav'
+  import GoodsRegin from '../components/goods/GoodsRegin'
+
+  export default class Index extends wepy.page {
+    config = {
+	//   navigationBarTitleText: 'test'
+	}
+    components = {
+		carousel: Carousel,
+		nav: Nav,
+		'goods-regin': GoodsRegin,
+    }
+
+    // mixins = [demoMixin]
+
+    data = {
+		api_host: '',
+		config_id: '',
+		goodsPage: 1,
+		goodsPerPage: 12,
+		merchant_id: '',
+		carouselConfig: {
+            imgUrls: [],
+            dotsColor: '#d9524f',
+            dotsActiveColor: '#fff'
+        },
+		navConfig: [],
+		goodsConfig: {
+			title: '推荐商品',
+			titleColor: 'red',
+			goods: [
+				// {
+				// 	imgUrl: '../images/info.png',
+				// 	goodsTit: '联想（Lenovo）拯救者联想（Lenovo）拯救者联想（Lenovo）拯救者联想（Lenovo）拯救者',
+				// 	line: 2,
+				// 	activityValue: '秒杀',
+				// 	goodsNum: 6666,
+				// 	icon: '../images/goodsNumIcon.png',
+				// 	price: 29,
+				// 	id: 76
+				// }
+			]
+		}
+    }
+
+    computed = {
+     
+    }
+
+    methods = {
+
+	}
+	
+	// 轮播图数据请求 
+	getCarousel(){
+		wx.request({
+			url: `${this.api_host}/restapi/wechat-focus`,
+			data: {
+				config_id: this.config_id,
+				belongs: 1,
+				type: 0
+			},
+			success: (res) => {
+				const data = res.data.data.map( (item) => {
+					return `${this.img_host}${item.image}`
+				})
+				this.carouselConfig.imgUrls = data
+				this.$apply()
+			}
+		})
+	}
+
+	//商品信息数据请求
+	getGoodsConfig(){
+		let arr = {
+				config_id: this.config_id,
+				merchant_id: this.merchant_id,
+				fields: 'id,name,suggested_price,sales_count,image' //获取自己需要的关键字
+			}
+		wx.request({
+			url: `${this.api_host}/restapi/products`,
+			data: arr,
+			success: (res) => {
+				const data = res.data.data.map( (item) => {
+					return {
+						imgUrl: `${this.img_host}${item.image}`,
+						goodsTit: item.name,
+						goodsNum: item.sales_count,
+						price: item.suggested_price,
+						id: item.id,
+						line: 2
+					}
+				})
+				this.goodsConfig.goods = data
+				this.$apply()
+			}
+		})
+	}
+
+	onReady(){
+		
+	}
+	getExtJson(){
+		if (wepy.getExtConfigSync) {
+			const extConfig = wepy.getExtConfigSync();
+			this.api_host = extConfig.api_host
+			this.img_host = extConfig.img_host
+			this.config_id = extConfig.config_id
+			this.merchant_id = extConfig.merchant_id
+			this.getCarousel()
+			this.getGoodsConfig()
+		}
+	}
+    onLoad() {
+		this.getExtJson()
+		// 获取商家信息及地址
+		this.api_host = this.$parent.globalData.api_host
+		this.img_host = this.$parent.globalData.img_host
+		this.config_id = this.$parent.globalData.config_id
+		this.merchant_id = this.$parent.globalData.merchant_id
+		
+		// 请求数据
+		// this.getCarousel()
+		// this.getGoodsConfig()
+
+		if(wx.getExtConfig) {
+			wx.getExtConfig({
+				success: (res) => {
+					// pages/article
+					const menu = res.extConfig.menu.map( (item) => {
+						let url = item.page.split('?')
+						let obj
+						if(url[1]){
+							obj = {}
+							let key = url[1].split('=')[0]
+							let val = url[1].split('=')[1]
+							obj[key] = val
+						}
+						return {
+							imgUrl: `${this.img_host}${item.icon}`,
+							navText: item.name,
+							navTo: url[0],
+							query: obj
+						}
+					})
+					menu && (this.navConfig = menu)
+					this.$apply()
+				}
+			})
+		}
+		let self = this
+		this.$parent.getUserInfo(function (userInfo) {
+			if (userInfo) {
+				self.userInfo = userInfo
+			}
+		})
+    }
+  }
+</script>
